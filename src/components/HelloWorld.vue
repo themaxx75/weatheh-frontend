@@ -8,6 +8,8 @@
     </p>
     <h3>Installed CLI Plugins</h3>
     <ul>
+      <li class="we-fog-dn" style="font-size:128px"></li>
+      <font-awesome-icon icon="sun" spin/>
       <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank">babel</a></li>
       <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank">eslint</a></li>
     </ul>

@@ -1,0 +1,97 @@
+@font-face {
+  font-family: 'fontello';
+  src: url('../font/fontello.eot?11163007');
+  src: url('../font/fontello.eot?11163007#iefix') format('embedded-opentype'),
+       url('../font/fontello.woff2?11163007') format('woff2'),
+       url('../font/fontello.woff?11163007') format('woff'),
+       url('../font/fontello.ttf?11163007') format('truetype'),
+       url('../font/fontello.svg?11163007#fontello') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+/* Chrome hack: SVG is rendered more smooth in Windozze. 100% magic, uncomment if you need it. */
+/* Note, that will break hinting! In other OS-es font will be not as sharp as it could be */
+/*
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: 'fontello';
+    src: url('../font/fontello.svg?11163007#fontello') format('svg');
+  }
+}
+*/
+ 
+ [class^="we-"]:before, [class*=" we-"]:before {
+  font-family: "fontello";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+ 
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  /* opacity: .8; */
+ 
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+ 
+  /* fix buttons height, for twitter bootstrap */
+  line-height: 1em;
+ 
+  /* Animation center compensation - margins should be symmetric */
+  /* remove if not needed */
+  margin-left: .2em;
+ 
+  /* you can be more comfortable with increased icons size */
+  /* font-size: 120%; */
+ 
+  /* Font smoothing. That was taken from TWBS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+ 
+  /* Uncomment for 3D effect */
+  /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
+}
+ 
+.we-blowing-snow-dn:before { content: '\e800'; } /* '' */
+.we-clear-n:before { content: '\e801'; } /* '' */
+.we-cloudy-dn:before { content: '\e802'; } /* '' */
+.we-drifting-snow-dn:before { content: '\e803'; } /* '' */
+.we-drizzle-dn:before { content: '\e804'; } /* '' */
+.we-flurries-dn:before { content: '\e805'; } /* '' */
+.we-fog-dn:before { content: '\e806'; } /* '' */
+.we-freezing-rain-dn:before { content: '\e807'; } /* '' */
+.we-funnel-cloud-dn:before { content: '\e808'; } /* '' */
+.we-hail-dn:before { content: '\e809'; } /* '' */
+.we-haze-dn:before { content: '\e80a'; } /* '' */
+.we-heavy-rain-dn:before { content: '\e80b'; } /* '' */
+.we-heavy-snow-dn:before { content: '\e80c'; } /* '' */
+.we-ice-crystals-d:before { content: '\e80d'; } /* '' */
+.we-light-flurries-d:before { content: '\e80e'; } /* '' */
+.we-light-flurries-n:before { content: '\e80f'; } /* '' */
+.we-light-rain-shower-and-flurries-d:before { content: '\e810'; } /* '' */
+.we-light-rain-shower-and-flurries-n:before { content: '\e811'; } /* '' */
+.we-light-rain-shower-d:before { content: '\e812'; } /* '' */
+.we-light-rain-shower-n:before { content: '\e813'; } /* '' */
+.we-mainly-clear-n:before { content: '\e814'; } /* '' */
+.we-mainly-sunny-d:before { content: '\e815'; } /* '' */
+.we-mostly-cloudy-d:before { content: '\e816'; } /* '' */
+.we-mostly-cloudy-n:before { content: '\e817'; } /* '' */
+.we-partly-cloudy-d:before { content: '\e818'; } /* '' */
+.we-partly-cloudy-n:before { content: '\e819'; } /* '' */
+.we-rain-and-snow-dn:before { content: '\e81a'; } /* '' */
+.we-rain-dn:before { content: '\e81b'; } /* '' */
+.we-sandstorm-dn:before { content: '\e81c'; } /* '' */
+.we-smoke-dn:before { content: '\e81d'; } /* '' */
+.we-squalls-dn:before { content: '\e81e'; } /* '' */
+.we-snow-dn:before { content: '\e81f'; } /* '' */
+.we-sunny-d:before { content: '\e820'; } /* '' */
+.we-thunderstorm-d:before { content: '\e821'; } /* '' */
+.we-thunderstorm-n:before { content: '\e822'; } /* '' */
+.we-thunderstorm-with-dust-storm-dn:before { content: '\e823'; } /* '' */
+.we-thunderstorm-with-hail-dn:before { content: '\e824'; } /* '' */
+.we-tornado-dn:before { content: '\e825'; } /* '' */
+.we-waterspout-dn:before { content: '\e826'; } /* '' */
+.we-windy-dn:before { content: '\e827'; } /* '' */

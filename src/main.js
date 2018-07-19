@@ -16,20 +16,9 @@ import './assets/css/weatheh.css'
 library.add(faSpinner)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
-
-function getMyName () {
-  return 'Maxime'
-}
-
-
-
-
-
-
 Vue.config.productionTip = false
 
 new Vue({
   router,
-  render: h => h(App),
-  getMyName: getMyName
+  render: h => h(App)
 }).$mount('#app')

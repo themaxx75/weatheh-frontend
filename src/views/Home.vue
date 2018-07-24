@@ -1,36 +1,37 @@
 <template>
   <div class="section">
+    <router-link to="/keep">Go to keep</router-link>
     <!--<div class="columns is-mobile">-->
-      <!--<div class="column is-half is-offset-one-quarter">-->
-        <form class="is-centered is-fullwidth">
+    <!--<div class="column is-half is-offset-one-quarter">-->
+    <form class="is-centered is-fullwidth">
+      <div class="field has-addons">
+        <div id="searchEl" v-bind:class="{ 'is-loading': isLoading }" class="control is-large is-fullwidth">
+          <!--<div id="searchEl" v-bind:class="{ 'forecastResponse !== null': isLoading }" class="control is-large is-fullwidth">-->
+          <input id="searchCity" class="input is-large is-expanded" type="text" placeholder="Search">
+        </div>
+        <div class="control is-large">
           <div class="field has-addons">
-            <div id="searchEl" v-bind:class="{ 'is-loading': isLoading }" class="control is-large is-fullwidth">
-            <!--<div id="searchEl" v-bind:class="{ 'forecastResponse !== null': isLoading }" class="control is-large is-fullwidth">-->
-              <input id="searchCity" class="input is-large is-expanded" type="text" placeholder="Search">
-            </div>
-            <div class="control is-large">
-              <div class="field has-addons">
-                <p class="control">
-                  <a class="button is-large">
-                    <span class="icon">
-                      <font-awesome-icon icon="search"></font-awesome-icon>
-                    </span>
-                    <span>Search</span>
-                  </a>
-                </p>
-                <p class="control">
-                  <a @click="getUserLocation" class="button is-large">
-                    <span class="icon">
-                      <font-awesome-icon icon="crosshairs"></font-awesome-icon>
-                    </span>
-                    <span>Locate</span>
-                  </a>
-                </p>
-              </div>
-            </div>
+            <p class="control">
+              <a class="button is-large">
+                <span class="icon">
+                  <font-awesome-icon icon="search"></font-awesome-icon>
+                </span>
+                <span>Search</span>
+              </a>
+            </p>
+            <p class="control">
+              <a @click="getUserLocation" class="button is-large">
+                <span class="icon">
+                  <font-awesome-icon icon="crosshairs"></font-awesome-icon>
+                </span>
+                <span>Locate</span>
+              </a>
+            </p>
           </div>
-        </form>
-      <!--</div>-->
+        </div>
+      </div>
+    </form>
+    <!--</div>-->
     <!--</div>-->
     <div v-if="forecastResponse !== null">
       <br/>
@@ -130,6 +131,5 @@ export default {
       }
     }
   }
-
 }
 </script>

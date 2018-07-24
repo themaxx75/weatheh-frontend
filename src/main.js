@@ -1,5 +1,6 @@
 import '@babel/polyfill'
 import Vue from 'vue'
+import './plugins/vuetify'
 import App from './App.vue'
 import router from './router'
 
@@ -9,7 +10,7 @@ import { faSpinner } from '@fortawesome/fontawesome-free-solid'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import './assets/css/fontello.css'
-import './assets/css/bulma.css'
+// import './assets/css/bulma.css'
 import './assets/css/weatheh.css'
 
 // library.add(faCoffee)

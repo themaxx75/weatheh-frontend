@@ -102,7 +102,7 @@ export default {
     }
   },
   methods: {
-    getUserLocation () {
+    getForecastFromLocation () {
       this.isLoading = true
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {

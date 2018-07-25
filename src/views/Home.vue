@@ -48,6 +48,31 @@
           </v-container>
         </v-dialog>
       </v-layout>
+
+      <!-- Dialog when not able to get geo location -->
+      <v-layout row justify-center>
+        <v-dialog v-model="showLocationWarning" max-width="290">
+          <v-card>
+            <v-card-title class="headline">
+              Error obtaining your geo location.
+            </v-card-title>
+            <v-card-text>
+              This can happen if you refuse to allow access to your geo location.
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="blue darken-1"
+                flat="flat"
+                @click="showLocationWarning = false"
+              >
+                Ok
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-layout>
+
     </v-content>
 
     <!-- Now in city -->
@@ -125,40 +150,42 @@ export default {
       isLoading: false,
       showWelcome: true,
       forecastRsp: null,
-      firstIteration: false
+      firstIteration: false,
+      showLocationWarning: false
     }
   },
   methods: {
-    getUserLocation () {
+    handleLocationError () {
+      console.log('In handleLocationError')
+      this.isLoading = false
+      this.showLocationWarning = true
+    },
+
+    getForecastFromLocation (position) {
       this.showWelcome = false
-      this.isLoading = true
-      console.log('Starting')
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-          console.log('Inside')
-          this.userPosition = position.coords
-          console.log(position.coords)
-          this.userLat = position.coords.latitude.toFixed(4)
-          this.userlon = position.coords.longitude.toFixed(4)
-          const path = process.env.VUE_APP_BASE_URI + `/forecast/coordinates/`
-          axios.get(path,
-            {
-              params: {
-                'lat': this.userPosition.latitude,
-                'lon': this.userPosition.longitude
-              }
-            }
-          )
-            .then(response => {
-              this.forecastResponse = response.data
-            })
-            .catch(error => {
-              console.log(error)
-            })
-          this.isLoading = false
+      console.log('in getForecastFromLocation')
+      const path = process.env.VUE_APP_BASE_URI + `/forecast/coordinates/`
+      axios.get(path,
+        {
+          params: {
+            'lat': position.coords.latitude.toFixed(4),
+            'lon': position.coords.longitude.toFixed(4)
+          }
+        }
+      )
+        .then(response => {
+          this.forecastResponse = response.data
         })
-      } else {
-        this.userPosition = null
+        .catch(error => {
+          console.log(error)
+        })
+      this.isLoading = false
+    },
+
+    getUserLocation () {
+      if (navigator.geolocation) {
+        this.isLoading = true
+        navigator.geolocation.getCurrentPosition(this.getForecastFromLocation, this.handleLocationError)
       }
     }
   }

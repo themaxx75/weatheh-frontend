@@ -1,96 +1,121 @@
 <template>
-  <div class="section">
-    <router-link to="/keep">Go to keep</router-link>
-    <!--<div class="columns is-mobile">-->
-    <!--<div class="column is-half is-offset-one-quarter">-->
-    <form class="is-centered is-fullwidth">
-      <div class="field has-addons">
-        <div id="searchEl" v-bind:class="{ 'is-loading': isLoading }" class="control is-large is-fullwidth">
-          <!--<div id="searchEl" v-bind:class="{ 'forecastResponse !== null': isLoading }" class="control is-large is-fullwidth">-->
-          <input id="searchCity" class="input is-large is-expanded" type="text" placeholder="Search">
-        </div>
-        <div class="control is-large">
-          <div class="field has-addons">
-            <p class="control">
-              <a class="button is-large">
-                <span class="icon">
-                  <font-awesome-icon icon="search"></font-awesome-icon>
+  <v-app id="weatheh">
+    <v-toolbar app absolute clipped-left>
+      <a href="/">
+        <img src="./../assets/logo_named.svg" alt="Weatheh.com logo" height="35">
+      </a>
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      <v-text-field
+        solo-inverted
+        flat
+        hide-details
+        label="Search city"
+        prepend-inner-icon="search"
+        disabled
+      ></v-text-field>
+      <v-btn small fab ripple @click="getUserLocation">
+        <v-icon>my_location</v-icon>
+      </v-btn>
+    </v-toolbar>
+    <v-content fluid>
+      <!-- Only visible when forecastResponse is null -->
+      <v-container v-if="forecastResponse === null" fluid fill-height class="grey lighten-4">
+        <v-jumbotron>
+          <v-container fill-height>
+            <v-layout align-center>
+              <v-flex align-center>
+                <h3 class="display-3" >
+                  <img src="./../assets/logo.svg" height="50"/>
+                  Canadian weather forecast
+                </h3>
+                <span class="subheading">
+                  All data from Environment and Climate Change Canada. Site made for fun and should not be used where accurate data is important to your safety.
                 </span>
-                <span>Search</span>
-              </a>
-            </p>
-            <p class="control">
-              <a @click="getUserLocation" class="button is-large">
-                <span class="icon">
-                  <font-awesome-icon icon="crosshairs"></font-awesome-icon>
-                </span>
-                <span>Locate</span>
-              </a>
-            </p>
-          </div>
-        </div>
-      </div>
-    </form>
-    <!--</div>-->
-    <!--</div>-->
-    <div v-if="forecastResponse !== null">
-      <br/>
-      <div class="columns is-centered">
-        <div class="column">
-          First column
-        </div>
-        <div class="column">
-          Second column
-        </div>
-      </div>
+                <!--<v-divider class="my-3"></v-divider>-->
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-jumbotron>
+      </v-container>
 
-      <div class="columns is-centered">
-        <div class="column">
-          <div class="card">
-            <header class="card-header">
-              <p class="card-header-title is-centered">
-                Now
-              </p>
-            </header>
-            <div class="card-header-title is-centered">
-              <i :class="forecastResponse.current.iconClass" class="huge-icon"></i>
-            </div>
-            <div class="card-content">
-              <p class="title is-3">{{ forecastResponse.current.temperatureDisplay }}&deg;C</p>
-              <p class="subtitle is-6">{{ forecastResponse.current.description }}</p>
-            </div>
-          </div>
-        </div>
+      <!-- Loader -->
+      <v-layout row>
+        <v-dialog v-model="isLoading" persistent fullscreen content-class="loading-dialog" transition="slide-y-transition">
+          <v-container fill-height>
+            <v-layout row justify-center align-center>
+              <v-progress-circular indeterminate :size="70" :width="7" color="black"></v-progress-circular>
+            </v-layout>
+          </v-container>
+        </v-dialog>
+      </v-layout>
+    </v-content>
 
-        <div v-for="forecast in forecastResponse.foreCast.slice(0, 3)" v-bind:key="forecast.id" class="column">
-          <div class="card">
-            <header class="card-header">
-              <p class="card-header-title is-centered">
-                {{ forecast.forecastPeriod }}
-              </p>
-            </header>
-            <div class="card-header-title is-centered">
-              <i :class="forecast.iconClass" class="huge-icon"></i>
+    <!-- Now in city -->
+    <v-jumbotron v-if="forecastResponse !== null">
+      <v-container>
+        <v-layout align-center>
+          <v-flex text-xs-center>
+            <div class="display-2">{{ forecastResponse.station.city }}</div>
+            <div>
+              {{ forecastResponse.city.nameEn }}
             </div>
-            <div class="card-content">
-              <p class="title is-3">{{ forecast.temperature }}&deg;C</p>
-              <p class="subtitle is-6">{{ forecast.cloudPrecipitation }}</p>
+            <br/>
+            <div class="display-4 font-weight-thin">
+              <i :class="forecastResponse.current.iconClass"></i>
+              {{ forecastResponse.current.temperature }}&deg;C
             </div>
-          </div>
-        </div>
-      </div>
-      <div v-for="hourly in forecastResponse.hourly" v-bind:key="hourly.id" class="columns is-mobile">
-        <div class="column">
-          {{ hourly.forLocalHour }}
-        </div>
-      </div>
-    </div>
-  </div>
+            <br/>
+            <div class="display-1">
+              {{ forecastResponse.current.description }}
+            </div>
+            <br/>
+            <div>
+              <v-chip label outline color="black" small disabled>Humidex: {{ forecastResponse.current.humidex }}</v-chip>
+              <v-chip label outline color="black" small disabled>Humidity: {{ forecastResponse.current.relativeHumidity }}%</v-chip>
+              <v-chip label outline color="black" small disabled>Wind: {{ forecastResponse.current.windDirection }} {{ forecastResponse.current.windSpeed }}Km</v-chip>
+            </div>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-jumbotron>
+
+    <!-- Results for short term -->
+    <v-content v-if="forecastResponse !== null" fluid>
+      <v-layout justify-center align-center>
+        <h1>Short term</h1>
+      </v-layout>
+      <v-layout>
+        <v-flex>
+          <v-card flat class="grey lighten-5">
+            <v-container fluid grid-list-md>
+              <v-layout row wrap>
+                <v-flex xs12 md6 lg3 v-for="forecast in forecastResponse.foreCast.slice(0, 4)" v-bind:key="forecast.id">
+                  <v-card tile raised height="290">
+                    <v-card-title>
+                      <div class="display-1">{{ forecast.forecastPeriod }}</div>
+                    </v-card-title>
+                    <v-card-title>
+                      <div class="display-3 font-weight-thin">
+                        <i :class="forecast.iconClass" ></i>
+                        {{ forecast.temperature }}&deg;C
+                      </div>
+                    </v-card-title>
+                    <v-card-title>
+                      <div >{{ forecast.cloudPrecipitation }}</div>
+                    </v-card-title>
+                  </v-card>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-card>
+        </v-flex>
+      </v-layout>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
 import axios from 'axios'
-
 export default {
   name: 'Home',
   data () {
@@ -98,15 +123,21 @@ export default {
       userPosition: null,
       forecastResponse: null,
       isLoading: false,
-      forecastRsp: null
+      showWelcome: true,
+      forecastRsp: null,
+      firstIteration: false
     }
   },
   methods: {
     getUserLocation () {
+      this.showWelcome = false
       this.isLoading = true
+      console.log('Starting')
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
+          console.log('Inside')
           this.userPosition = position.coords
+          console.log(position.coords)
           this.userLat = position.coords.latitude.toFixed(4)
           this.userlon = position.coords.longitude.toFixed(4)
           const path = process.env.VUE_APP_BASE_URI + `/forecast/coordinates/`

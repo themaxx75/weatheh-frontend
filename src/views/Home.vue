@@ -5,43 +5,44 @@
         <img src="./../assets/logo_named.svg" alt="Weatheh.com logo" height="35">
       </a>
       &nbsp;&nbsp;&nbsp;&nbsp;
-      <!--<v-text-field-->
-        <!--solo-inverted-->
-        <!--flat-->
-        <!--hide-details-->
-        <!--label="Search city"-->
-        <!--prepend-inner-icon="search"-->
-        <!--disabled-->
-      <!--&gt;</v-text-field>-->
-
-      <!--<v-autocomplete-->
-        <!--:loading="loading"-->
-        <!--:items="items"-->
-        <!--:search-input.sync="search"-->
-        <!--v-model="select"-->
-        <!--cache-items-->
-        <!--class="mx-3"-->
-        <!--flat-->
-        <!--hide-no-data-->
-        <!--hide-details-->
-        <!--label="Search for a city"-->
-        <!--solo-inverted-->
-      <!--&gt;</v-autocomplete>-->
       <v-autocomplete
         v-model="state"
         label="Search cities"
         :items="states"
         @input.native="getSearchResults"
         @change="getForecastForCity(state)"
-        item-text="nameEn"
+        item-text="name"
         item-value="id"
         :no-filter="true"
-        :loading="isSearching"
         solo
         flat
         hide-details
+        hide-no-data
         :clearable="true"
-      ></v-autocomplete>
+      >
+        <template slot="no-data">
+          <v-list-tile>
+            <v-list-tile-title>
+              Do the search
+            </v-list-tile-title>
+          </v-list-tile>
+        </template>
+        <template
+          slot="item"
+          slot-scope="{ item, tile }"
+        >
+          <v-list-tile-avatar
+            color="grey darken-3"
+            class="headline font-weight-light white--text"
+          >
+            {{ item.province.code }}
+          </v-list-tile-avatar>
+          <v-list-tile-content>
+            <v-list-tile-title v-text="item.name"></v-list-tile-title>
+            <v-list-tile-sub-title v-text="item.station.name"></v-list-tile-sub-title>
+          </v-list-tile-content>
+        </template>
+      </v-autocomplete>
       <v-btn
         @click="setLanguage"
         outline
@@ -125,22 +126,22 @@
           <v-flex text-xs-center>
             <div class="display-2">{{ forecastResults.station.city }}</div>
             <div>
-              {{ forecastResults.city.nameEn }}
+              {{ forecastResults.city.name }}
             </div>
             <br/>
-            <div class="display-4 font-weight-thin">
+            <div v-if="forecastResults.current.temperature" class="display-4 font-weight-thin">
               <i :class="forecastResults.current.iconClass"></i>
               {{ forecastResults.current.temperature }}&deg;C
             </div>
             <br/>
-            <div class="display-1">
+            <div v-if="forecastResults.current.description" class="display-1">
               {{ forecastResults.current.description }}
             </div>
             <br/>
             <div>
-              <v-chip label outline color="black" small disabled>Humidex: {{ forecastResults.current.humidex }}</v-chip>
-              <v-chip label outline color="black" small disabled>Humidity: {{ forecastResults.current.relativeHumidity }}%</v-chip>
-              <v-chip label outline color="black" small disabled>Wind: {{ forecastResults.current.windDirection }} {{ forecastResults.current.windSpeed }}Km</v-chip>
+              <v-chip v-if="forecastResults.current.humidex" label outline color="black" small disabled>Humidex: {{ forecastResults.current.humidex }}</v-chip>
+              <v-chip v-if="forecastResults.current.relativeHumidity" label outline color="black" small disabled>Humidity: {{ forecastResults.current.relativeHumidity }}%</v-chip>
+              <v-chip v-if="forecastResults.current.windDirection" label outline color="black" small disabled>Wind: {{ forecastResults.current.windDirection }} {{ forecastResults.current.windSpeed }}Km</v-chip>
             </div>
           </v-flex>
         </v-layout>
@@ -149,9 +150,6 @@
 
     <!-- Results for short term -->
     <v-content v-if="forecastResults !== null" fluid>
-      <!--<v-layout justify-center align-center>-->
-        <!--<h1>Short term</h1>-->
-      <!--</v-layout>-->
       <v-layout>
         <v-flex>
           <v-card flat class="grey lighten-5">
@@ -260,7 +258,7 @@ export default {
     },
 
     getSearchResults (term) {
-      if (term.target.value !== null) {
+      if (term.target.value) {
         this.isSearching = true
         const path = process.env.VUE_APP_BASE_URI + `/forecast/search/` + term.target.value
         axios.get(path, {

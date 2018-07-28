@@ -7,13 +7,14 @@
       :prominent="true"
     >
       <a href="/">
+        <!--suppress CheckImageSize -->
         <img src="./../assets/logo_named.svg" alt="Weatheh.com logo" height="35">
       </a>
       &nbsp;&nbsp;&nbsp;&nbsp;
       <v-autocomplete
         id="search"
         v-model="state"
-        label="Search cities"
+        :label="$t('message.searchPlaceHolder')"
         :items="states"
         @input.native="getSearchResults"
         @change="getForecastForCity(state)"
@@ -29,7 +30,7 @@
         <template slot="no-data">
           <v-list-tile>
             <v-list-tile-title>
-              Do the search
+              {{ $t("message.errors.noResults") }}
             </v-list-tile-title>
           </v-list-tile>
         </template>
@@ -48,7 +49,11 @@
             <v-list-tile-sub-title v-text="item.station.name"></v-list-tile-sub-title>
           </v-list-tile-content>
           <v-list-tile-avatar>
-            <v-chip color="grey darken-3" text-color="white">
+            <v-chip
+              color="grey darken-3"
+              text-color="white"
+              v-if="item.condition"
+            >
               <i :class="item.condition.iconClass" ></i>{{ item.condition.temperature }}&deg;C
             </v-chip>
           </v-list-tile-avatar>
@@ -61,7 +66,7 @@
         small
         fab
       >
-        {{ language }}
+        {{ this.$i18n.locale }}
       </v-btn>
       <v-btn
         @click="getUserLocation"
@@ -81,11 +86,12 @@
             <v-layout align-center>
               <v-flex align-center>
                 <h3 class="display-3" >
+                  <!--suppress CheckImageSize -->
                   <img src="./../assets/logo.svg" height="50"/>
-                  Canadian weather forecast
+                  {{ $t("message.placeHolder.title") }}
                 </h3>
                 <span class="subheading">
-                  All data from Environment and Climate Change Canada public API. Site made for fun and should not be used where accurate data is important to your safety.
+                  {{ $t("message.placeHolder.body") }}
                 </span>
                 <!--<v-divider class="my-3"></v-divider>-->
               </v-flex>
@@ -121,10 +127,10 @@
         <v-dialog v-model="showLocationWarning" max-width="290">
           <v-card>
             <v-card-title class="headline">
-              Error obtaining your geo location.
+              {{ $t("message.errors.geoLocationTitle") }}
             </v-card-title>
             <v-card-text>
-              This can happen if you refuse to allow access to your geo location.
+              {{ $t("message.errors.geoLocationBody") }}
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
@@ -176,7 +182,7 @@
                 small
                 disabled
               >
-                Humidex: {{ forecastResults.current.humidex }}
+                {{ $t("message.terms.humidex") }}: {{ forecastResults.current.humidex }}
               </v-chip>
               <v-chip
                 v-if="forecastResults.current.relativeHumidity"
@@ -186,7 +192,7 @@
                 small
                 disabled
               >
-                Humidity: {{ forecastResults.current.relativeHumidity }}%
+                {{ $t("message.terms.humidity") }}: {{ forecastResults.current.relativeHumidity }}%
               </v-chip>
               <v-chip
                 v-if="forecastResults.current.windDirection"
@@ -196,9 +202,13 @@
                 small
                 disabled
               >
-                Wind: {{ forecastResults.current.windDirection }} {{ forecastResults.current.windSpeed }}Km
+                {{ $t("message.terms.wind") }}: {{ forecastResults.current.windDirection }} {{ forecastResults.current.windSpeed }}Km
               </v-chip>
             </div>
+            <div>
+              {{ $t("message.terms.observed") }}: {{ fromUtcToLocal(forecastResults.observationDatetimeUtc) }}
+            </div>
+
           </v-flex>
         </v-layout>
       </v-container>
@@ -244,12 +254,12 @@
 
 <script>
 import axios from 'axios'
+import moment from 'moment'
 
 export default {
   name: 'Home',
   data () {
     return {
-      language: 'en',
       city: null,
       userPosition: null,
       forecastResults: null,
@@ -267,17 +277,22 @@ export default {
       let lang = this.$cookie.get('lang')
       if (lang == null) {
         this.$cookie.set('lang', 'en', 30)
+        this.$i18n.locale = 'en'
       } else {
-        this.language = lang
+        this.$i18n.locale = lang
       }
     },
 
+    fromUtcToLocal (dt) {
+      return moment(dt).format('HH:mm')
+    },
+
     setLanguage () {
-      if (this.language === 'en') {
-        this.language = 'fr'
+      if (this.$i18n.locale === 'en') {
+        this.$i18n.locale = 'fr'
         this.$cookie.set('lang', 'fr', 30)
       } else {
-        this.language = 'en'
+        this.$i18n.locale = 'en'
         this.$cookie.set('lang', 'en', 30)
       }
       if (this.city) {
@@ -300,7 +315,7 @@ export default {
           params: {
             'lat': position.coords.latitude.toFixed(4),
             'lon': position.coords.longitude.toFixed(4),
-            'lang': this.language
+            'lang': this.$i18n.locale
           }
         }
       )
@@ -326,7 +341,7 @@ export default {
         this.isSearching = true
         const path = process.env.VUE_APP_BASE_URI + `/forecast/search/` + term.target.value
         axios.get(path, {
-          params: {'lang': this.language}
+          params: {'lang': this.$i18n.locale}
         })
           .then(response => {
             this.states = response.data
@@ -343,9 +358,10 @@ export default {
     getForecastForCity (cityCode) {
       if (cityCode) {
         this.$vuetify.goTo(0)
+        this.isLoadingFullScreen = true
         const path = process.env.VUE_APP_BASE_URI + `/forecast/city/` + cityCode
         axios.get(path, {
-          params: {'lang': this.language}
+          params: {'lang': this.$i18n.locale}
         })
           .then(response => {
             this.forecastResults = response.data
@@ -354,6 +370,7 @@ export default {
           .catch(error => {
             console.log(error)
           })
+        this.isLoadingFullScreen = false
       }
     }
   },

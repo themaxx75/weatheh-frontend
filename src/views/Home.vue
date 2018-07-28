@@ -148,6 +148,7 @@
         <v-layout align-center>
           <v-flex text-xs-center>
             <div class="display-2">{{ forecastResults.station.city }}</div>
+            <div class="display-1">{{ forecastResults.city.province.name }}</div>
             <div
               v-if="forecastResults.city && forecastResults.city.name !== forecastResults.station.city"
             >

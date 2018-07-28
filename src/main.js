@@ -6,7 +6,7 @@ import router from './router'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faSpinner } from '@fortawesome/fontawesome-free-solid'
-// import { faCoffee } from '@fortawesome/free-solid-svg-icons'
+import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import './assets/css/fontello.css'
@@ -15,7 +15,8 @@ import './assets/css/weatheh.css'
 import VueCookie from 'vue-cookie'
 import VueI18n from 'vue-i18n'
 
-library.add(faSpinner)
+library.add(faSpinner, faGithub)
+// library.add(fab)
 Vue.use(VueCookie)
 Vue.use(VueI18n)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
@@ -25,8 +26,9 @@ const messages = {
   en: {
     message: {
       placeHolder: {
-        title: 'Canadian weather forecast',
-        body: 'All data from Environment and Climate Change Canada public API. Site made for fun and should not be used where accurate data is important to your safety.'
+        title: 'Weatheh, Canadian weather forecast',
+        body: 'All data from Environment and Climate Change Canada public API. Site made for fun and should not be used where accurate data is important to your safety.',
+        description: 'The site is made as a learning tool, so expect bugs and issues.'
       },
       searchPlaceHolder: 'Search cities',
       errors: {
@@ -39,14 +41,19 @@ const messages = {
         humidity: 'Humidity',
         wind: 'Wind',
         observed: 'Observed'
+      },
+      footer: {
+        about: 'About',
+        github: 'Visit on Github'
       }
     }
   },
   fr: {
     message: {
       placeHolder: {
-        title: 'Prévisions météo canadianne',
-        body: "Toute information issue d'Environnement et Changement climatique Canada. Le site a été fais que pour le plaisire. Ne pas s'y fiez si votre sécurité en depand."
+        title: 'Weatheh, Prévisions météo canadienne',
+        body: "Toute information issue de l'API publique d'Environnement et Changement climatique Canada. Le site est developper que pour le plaisire. Ne pas s'y fiez si votre sécurité en depand.",
+        description: "Le site sert d'outil d'apprentissage. Ne soyez pas surpris d'encontrer des bugs et problemes."
       },
       searchPlaceHolder: 'Recherez une ville',
       errors: {
@@ -59,13 +66,17 @@ const messages = {
         humidity: 'Humiditée',
         wind: 'Vent',
         observed: 'Observé'
+      },
+      footer: {
+        about: 'À propos',
+        github: 'Visitez sur Github.'
       }
     }
   }
 }
 // Create VueI18n instance with options
 const i18n = new VueI18n({
-  locale: 'fr', // set locale
+  locale: 'en', // set locale
   messages // set locale messages
 })
 

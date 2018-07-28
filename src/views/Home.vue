@@ -46,7 +46,7 @@
           </v-list-tile-avatar>
           <v-list-tile-content>
             <v-list-tile-title v-text="item.name"></v-list-tile-title>
-            <v-list-tile-sub-title v-text="item.station.name"></v-list-tile-sub-title>
+            <v-list-tile-sub-title v-text="item.region"></v-list-tile-sub-title>
           </v-list-tile-content>
           <v-list-tile-avatar>
             <v-chip
@@ -85,11 +85,11 @@
           <v-container fill-height>
             <v-layout align-center>
               <v-flex align-center>
-                <h3 class="display-3" >
+                <h4 class="display-1" >
                   <!--suppress CheckImageSize -->
                   <img src="./../assets/logo.svg" height="50"/>
                   {{ $t("message.placeHolder.title") }}
-                </h3>
+                </h4>
                 <span class="subheading">
                   {{ $t("message.placeHolder.body") }}
                 </span>
@@ -249,6 +249,39 @@
         </v-flex>
       </v-layout>
     </v-content>
+    <v-bottom-nav
+      :value="true"
+      :prominent="true"
+    >
+      <v-dialog width="70%">
+        <v-btn slot="activator">
+          <span>{{ $t("message.footer.about") }}</span>
+          <v-icon>info</v-icon>
+        </v-btn>
+
+        <v-card>
+          <v-card-title
+            class="headline grey lighten-2"
+            primary-title
+          >
+            {{ $t("message.placeHolder.title") }}
+          </v-card-title>
+
+          <v-card-text>
+            {{ $t("message.placeHolder.body") }}
+          </v-card-text>
+          <v-card-text>
+            {{ $t("message.placeHolder.description") }}
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+
+      <v-btn href="https://github.com/themaxx75" target="_blank">
+        <span>{{ $t("message.footer.github") }}</span>
+        <v-icon>code</v-icon>
+      </v-btn>
+
+    </v-bottom-nav>
   </v-app>
 </template>
 

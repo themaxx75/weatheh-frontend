@@ -151,7 +151,10 @@
     </v-content>
 
     <!-- Now in city -->
-    <v-jumbotron v-if="forecastResults !== null">
+    <v-jumbotron
+      v-if="forecastResults !== null"
+      height="100%"
+    >
       <v-container>
         <v-layout align-center>
           <v-flex text-xs-center>

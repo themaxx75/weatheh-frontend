@@ -67,7 +67,8 @@
         small
         fab
       >
-        {{ this.$i18n.locale }}
+        <div v-if="this.$i18n.locale === 'en'">FR</div>
+        <div v-else>EN</div>
       </v-btn>
       <v-btn
         @click="getUserLocation"
@@ -254,9 +255,12 @@
         </v-flex>
       </v-layout>
     </v-content>
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
     <v-bottom-nav
+      absolute
+      :fixed="false"
       :value="true"
-      :prominent="true"
     >
       <v-dialog width="70%">
         <v-btn slot="activator">

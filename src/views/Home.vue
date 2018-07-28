@@ -327,7 +327,7 @@ export default {
     },
 
     fromUtcToLocal (dt) {
-      return moment(dt).format('HH:mm')
+      return moment(dt).format('HH[h]mm')
     },
 
     setLanguage () {

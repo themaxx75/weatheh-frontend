@@ -5,21 +5,64 @@
         <img src="./../assets/logo_named.svg" alt="Weatheh.com logo" height="35">
       </a>
       &nbsp;&nbsp;&nbsp;&nbsp;
-      <v-text-field
-        solo-inverted
+      <!--<v-text-field-->
+        <!--solo-inverted-->
+        <!--flat-->
+        <!--hide-details-->
+        <!--label="Search city"-->
+        <!--prepend-inner-icon="search"-->
+        <!--disabled-->
+      <!--&gt;</v-text-field>-->
+
+      <!--<v-autocomplete-->
+        <!--:loading="loading"-->
+        <!--:items="items"-->
+        <!--:search-input.sync="search"-->
+        <!--v-model="select"-->
+        <!--cache-items-->
+        <!--class="mx-3"-->
+        <!--flat-->
+        <!--hide-no-data-->
+        <!--hide-details-->
+        <!--label="Search for a city"-->
+        <!--solo-inverted-->
+      <!--&gt;</v-autocomplete>-->
+      <v-autocomplete
+        v-model="state"
+        label="Search cities"
+        :items="states"
+        @input.native="getSearchResults"
+        @change="getForecastForCity(state)"
+        item-text="nameEn"
+        item-value="id"
+        :no-filter="true"
+        :loading="isSearching"
+        solo
         flat
         hide-details
-        label="Search city"
-        prepend-inner-icon="search"
-        disabled
-      ></v-text-field>
-      <v-btn small fab ripple @click="getUserLocation">
+        :clearable="true"
+      ></v-autocomplete>
+      <v-btn
+        @click="setLanguage"
+        outline
+        small
+        fab
+      >
+        {{ language }}
+      </v-btn>
+      <v-btn
+        @click="getUserLocation"
+        outline
+        small
+        fab
+        icon
+      >
         <v-icon>my_location</v-icon>
       </v-btn>
     </v-toolbar>
     <v-content fluid>
-      <!-- Only visible when forecastResponse is null -->
-      <v-container v-if="forecastResponse === null" fluid fill-height class="grey lighten-4">
+      <!-- Only visible when forecastResults is null -->
+      <v-container v-if="forecastResults === null" fluid fill-height class="grey lighten-4">
         <v-jumbotron>
           <v-container fill-height>
             <v-layout align-center>
@@ -29,7 +72,7 @@
                   Canadian weather forecast
                 </h3>
                 <span class="subheading">
-                  All data from Environment and Climate Change Canada. Site made for fun and should not be used where accurate data is important to your safety.
+                  All data from Environment and Climate Change Canada public API. Site made for fun and should not be used where accurate data is important to your safety.
                 </span>
                 <!--<v-divider class="my-3"></v-divider>-->
               </v-flex>
@@ -40,7 +83,7 @@
 
       <!-- Loader -->
       <v-layout row>
-        <v-dialog v-model="isLoading" persistent fullscreen content-class="loading-dialog" transition="slide-y-transition">
+        <v-dialog v-model="isLoadingFullScreen" persistent fullscreen content-class="loading-dialog" transition="slide-y-transition">
           <v-container fill-height>
             <v-layout row justify-center align-center>
               <v-progress-circular indeterminate :size="70" :width="7" color="black"></v-progress-circular>
@@ -76,28 +119,28 @@
     </v-content>
 
     <!-- Now in city -->
-    <v-jumbotron v-if="forecastResponse !== null">
+    <v-jumbotron v-if="forecastResults !== null">
       <v-container>
         <v-layout align-center>
           <v-flex text-xs-center>
-            <div class="display-2">{{ forecastResponse.station.city }}</div>
+            <div class="display-2">{{ forecastResults.station.city }}</div>
             <div>
-              {{ forecastResponse.city.nameEn }}
+              {{ forecastResults.city.nameEn }}
             </div>
             <br/>
             <div class="display-4 font-weight-thin">
-              <i :class="forecastResponse.current.iconClass"></i>
-              {{ forecastResponse.current.temperature }}&deg;C
+              <i :class="forecastResults.current.iconClass"></i>
+              {{ forecastResults.current.temperature }}&deg;C
             </div>
             <br/>
             <div class="display-1">
-              {{ forecastResponse.current.description }}
+              {{ forecastResults.current.description }}
             </div>
             <br/>
             <div>
-              <v-chip label outline color="black" small disabled>Humidex: {{ forecastResponse.current.humidex }}</v-chip>
-              <v-chip label outline color="black" small disabled>Humidity: {{ forecastResponse.current.relativeHumidity }}%</v-chip>
-              <v-chip label outline color="black" small disabled>Wind: {{ forecastResponse.current.windDirection }} {{ forecastResponse.current.windSpeed }}Km</v-chip>
+              <v-chip label outline color="black" small disabled>Humidex: {{ forecastResults.current.humidex }}</v-chip>
+              <v-chip label outline color="black" small disabled>Humidity: {{ forecastResults.current.relativeHumidity }}%</v-chip>
+              <v-chip label outline color="black" small disabled>Wind: {{ forecastResults.current.windDirection }} {{ forecastResults.current.windSpeed }}Km</v-chip>
             </div>
           </v-flex>
         </v-layout>
@@ -105,16 +148,16 @@
     </v-jumbotron>
 
     <!-- Results for short term -->
-    <v-content v-if="forecastResponse !== null" fluid>
-      <v-layout justify-center align-center>
-        <h1>Short term</h1>
-      </v-layout>
+    <v-content v-if="forecastResults !== null" fluid>
+      <!--<v-layout justify-center align-center>-->
+        <!--<h1>Short term</h1>-->
+      <!--</v-layout>-->
       <v-layout>
         <v-flex>
           <v-card flat class="grey lighten-5">
             <v-container fluid grid-list-md>
               <v-layout row wrap>
-                <v-flex xs12 md6 lg3 v-for="forecast in forecastResponse.foreCast.slice(0, 4)" v-bind:key="forecast.id">
+                <v-flex xs12 md6 lg3 v-for="forecast in forecastResults.foreCast.slice(0, 4)" v-bind:key="forecast.id">
                   <v-card tile raised height="290">
                     <v-card-title>
                       <div class="display-1">{{ forecast.forecastPeriod }}</div>
@@ -141,53 +184,119 @@
 
 <script>
 import axios from 'axios'
+
 export default {
   name: 'Home',
   data () {
     return {
+      language: 'en',
+      city: null,
       userPosition: null,
-      forecastResponse: null,
-      isLoading: false,
+      forecastResults: null,
+      isLoadingFullScreen: false,
+      isSearching: false,
       showWelcome: true,
-      forecastRsp: null,
-      firstIteration: false,
-      showLocationWarning: false
+      showLocationWarning: false,
+      state: null,
+      states: []
     }
   },
+
   methods: {
+    getLanguage () {
+      let lang = this.$cookie.get('lang')
+      if (lang == null) {
+        this.$cookie.set('lang', 'en', 30)
+      } else {
+        this.language = lang
+      }
+    },
+
+    setLanguage () {
+      if (this.language === 'en') {
+        this.language = 'fr'
+        this.$cookie.set('lang', 'fr', 30)
+      } else {
+        this.language = 'en'
+        this.$cookie.set('lang', 'en', 30)
+      }
+      if (this.city) {
+        this.getForecastForCity(this.city)
+      }
+    },
+
     handleLocationError () {
-      console.log('In handleLocationError')
-      this.isLoading = false
+      this.isLoadingFullScreen = false
       this.showLocationWarning = true
     },
 
     getForecastFromLocation (position) {
       this.showWelcome = false
-      console.log('in getForecastFromLocation')
       const path = process.env.VUE_APP_BASE_URI + `/forecast/coordinates/`
       axios.get(path,
         {
           params: {
             'lat': position.coords.latitude.toFixed(4),
-            'lon': position.coords.longitude.toFixed(4)
+            'lon': position.coords.longitude.toFixed(4),
+            'lang': this.language
           }
         }
       )
         .then(response => {
-          this.forecastResponse = response.data
+          this.forecastResults = response.data
+          this.city = this.forecastResults.city.id
         })
         .catch(error => {
           console.log(error)
         })
-      this.isLoading = false
+      this.isLoadingFullScreen = false
     },
 
     getUserLocation () {
       if (navigator.geolocation) {
-        this.isLoading = true
+        this.isLoadingFullScreen = true
         navigator.geolocation.getCurrentPosition(this.getForecastFromLocation, this.handleLocationError)
       }
+    },
+
+    getSearchResults (term) {
+      if (term.target.value !== null) {
+        this.isSearching = true
+        const path = process.env.VUE_APP_BASE_URI + `/forecast/search/` + term.target.value
+        axios.get(path, {
+          params: {'lang': this.language}
+        })
+          .then(response => {
+            this.states = response.data
+            this.isSearching = false
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      } else {
+        this.states = []
+      }
+    },
+
+    getForecastForCity (cityCode) {
+      if (cityCode) {
+        const path = process.env.VUE_APP_BASE_URI + `/forecast/city/` + cityCode
+        axios.get(path, {
+          params: {'lang': this.language}
+        })
+          .then(response => {
+            this.forecastResults = response.data
+            this.city = this.forecastResults.city.id
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      }
     }
+  },
+
+  beforeMount () {
+    this.getLanguage()
   }
 }
 </script>

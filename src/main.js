@@ -10,12 +10,13 @@ import { faSpinner } from '@fortawesome/fontawesome-free-solid'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import './assets/css/fontello.css'
-// import './assets/css/bulma.css'
 import './assets/css/weatheh.css'
+
+import VueCookie from 'vue-cookie'
 
 // library.add(faCoffee)
 library.add(faSpinner)
-
+Vue.use(VueCookie)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.config.productionTip = false
 

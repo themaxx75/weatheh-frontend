@@ -4,10 +4,10 @@ import './plugins/vuetify'
 import App from './App.vue'
 import router from './router'
 
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faSpinner } from '@fortawesome/fontawesome-free-solid'
-import { faGithub } from '@fortawesome/free-brands-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+// import { library } from '@fortawesome/fontawesome-svg-core'
+// import { faSpinner } from '@fortawesome/fontawesome-free-solid'
+// import { faGithub } from '@fortawesome/free-brands-svg-icons'
+// import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import './assets/css/fontello.css'
 import './assets/css/weatheh.css'
@@ -15,18 +15,18 @@ import './assets/css/weatheh.css'
 import VueCookie from 'vue-cookie'
 import VueI18n from 'vue-i18n'
 
-library.add(faSpinner, faGithub)
-// library.add(fab)
+// library.add(faSpinner)
+
 Vue.use(VueCookie)
 Vue.use(VueI18n)
-Vue.component('font-awesome-icon', FontAwesomeIcon)
+// Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.config.productionTip = false
 
 const messages = {
   en: {
     message: {
       placeHolder: {
-        title: 'Weatheh, Canadian weather forecast',
+        title: 'Canadian weather forecast',
         body: 'All data from Environment and Climate Change Canada public API. Site made for fun and should not be used where accurate data is important to your safety.',
         description: 'The site is made as a learning tool, so expect bugs and issues.'
       },
@@ -51,19 +51,19 @@ const messages = {
   fr: {
     message: {
       placeHolder: {
-        title: 'Weatheh, Prévisions météo canadienne',
-        body: "Toute information issue de l'API publique d'Environnement et Changement climatique Canada. Le site est developper que pour le plaisire. Ne pas s'y fiez si votre sécurité en depand.",
-        description: "Le site sert d'outil d'apprentissage. Ne soyez pas surpris d'encontrer des bugs et problemes."
+        title: 'Prévisions météo canadienne',
+        body: "Toute information issue de l'API publique d'Environnement et Changement climatique Canada. Le site est développer que pour le plaisir. Ne pas s'y fiez si votre sécurité en dépend.",
+        description: "Le site sert d'outil d'apprentissage. Ne soyez pas surpris de rencontrer des bugs et problèmes."
       },
-      searchPlaceHolder: 'Recherez une ville',
+      searchPlaceHolder: 'Rechercher une ville',
       errors: {
-        geoLocationTitle: "Erreure en essayant d'obtenir votre position.",
-        geoLocationBody: "'Ceci peu se produire l'ors que vous avez refuser l'access a votre location, ou si la fonctionalite n'est pas presente.",
-        noResults: 'Aucun resultat'
+        geoLocationTitle: "Erreur en essayant d'obtenir votre position.",
+        geoLocationBody: "Ceci peut se produire si vous refuser l’accès à votre location, ou si la fonctionnalité n'est pas présente.",
+        noResults: 'Aucun résultat'
       },
       terms: {
         humidex: 'Humidex',
-        humidity: 'Humiditée',
+        humidity: 'Humidité',
         wind: 'Vent',
         observed: 'Observé'
       },

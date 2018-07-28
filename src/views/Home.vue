@@ -21,6 +21,7 @@
         item-text="name"
         item-value="id"
         :no-filter="true"
+        :loading="isSearching"
         solo
         flat
         hide-details
@@ -52,7 +53,7 @@
             <v-chip
               color="grey darken-3"
               text-color="white"
-              v-if="item.condition"
+              v-if="item.condition.temperature"
             >
               <i :class="item.condition.iconClass" ></i>{{ item.condition.temperature }}&deg;C
             </v-chip>
@@ -88,6 +89,7 @@
                 <h4 class="display-1" >
                   <!--suppress CheckImageSize -->
                   <img src="./../assets/logo.svg" height="50"/>
+                  Weatheh<br/>
                   {{ $t("message.placeHolder.title") }}
                 </h4>
                 <span class="subheading">
@@ -205,7 +207,7 @@
                 {{ $t("message.terms.wind") }}: {{ forecastResults.current.windDirection }} {{ forecastResults.current.windSpeed }}Km
               </v-chip>
             </div>
-            <div>
+            <div v-if="forecastResults.observationDatetimeUtc">
               {{ $t("message.terms.observed") }}: {{ fromUtcToLocal(forecastResults.observationDatetimeUtc) }}
             </div>
 
@@ -260,8 +262,13 @@
         </v-btn>
 
         <v-card>
+          <v-card-title>
+            <!--suppress CheckImageSize -->
+            <img src="./../assets/logo.svg" height="50"/>
+            <h1>&nbsp;&nbsp;Weatheh</h1>
+          </v-card-title>
           <v-card-title
-            class="headline grey lighten-2"
+            class="headline"
             primary-title
           >
             {{ $t("message.placeHolder.title") }}
@@ -355,6 +362,7 @@ export default {
         .then(response => {
           this.forecastResults = response.data
           this.city = this.forecastResults.city.id
+          this.$cookie.set('city', this.city, 30)
         })
         .catch(error => {
           console.log(error)
@@ -378,11 +386,11 @@ export default {
         })
           .then(response => {
             this.states = response.data
-            this.isSearching = false
           })
           .catch(error => {
             console.log(error)
           })
+        this.isSearching = false
       } else {
         this.states = []
       }
@@ -399,17 +407,26 @@ export default {
           .then(response => {
             this.forecastResults = response.data
             this.city = this.forecastResults.city.id
+            this.$cookie.set('city', this.city, 30)
           })
           .catch(error => {
             console.log(error)
           })
         this.isLoadingFullScreen = false
       }
+    },
+
+    getPreviousCity () {
+      const city = this.$cookie.get('city')
+      if (city || this.forecastResults == null) {
+        this.getForecastForCity(city)
+      }
     }
   },
 
   beforeMount () {
     this.getLanguage()
+    this.getPreviousCity()
   }
 }
 </script>

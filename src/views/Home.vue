@@ -1,11 +1,17 @@
 <template>
   <v-app id="weatheh">
-    <v-toolbar app absolute clipped-left>
+    <!--absolute-->
+    <v-toolbar
+      app
+      clipped-left
+      :prominent="true"
+    >
       <a href="/">
         <img src="./../assets/logo_named.svg" alt="Weatheh.com logo" height="35">
       </a>
       &nbsp;&nbsp;&nbsp;&nbsp;
       <v-autocomplete
+        id="search"
         v-model="state"
         label="Search cities"
         :items="states"
@@ -41,6 +47,12 @@
             <v-list-tile-title v-text="item.name"></v-list-tile-title>
             <v-list-tile-sub-title v-text="item.station.name"></v-list-tile-sub-title>
           </v-list-tile-content>
+          <v-list-tile-avatar>
+            <v-chip color="grey darken-3" text-color="white">
+              <i :class="item.condition.iconClass" ></i>{{ item.condition.temperature }}&deg;C
+            </v-chip>
+          </v-list-tile-avatar>
+          &nbsp;
         </template>
       </v-autocomplete>
       <v-btn
@@ -84,10 +96,21 @@
 
       <!-- Loader -->
       <v-layout row>
-        <v-dialog v-model="isLoadingFullScreen" persistent fullscreen content-class="loading-dialog" transition="slide-y-transition">
+        <v-dialog
+          v-model="isLoadingFullScreen"
+          persistent
+          fullscreen
+          content-class="loading-dialog"
+          transition="slide-y-transition"
+        >
           <v-container fill-height>
             <v-layout row justify-center align-center>
-              <v-progress-circular indeterminate :size="70" :width="7" color="black"></v-progress-circular>
+              <v-progress-circular
+                indeterminate
+                :size="70"
+                :width="7"
+                color="black"
+              ></v-progress-circular>
             </v-layout>
           </v-container>
         </v-dialog>
@@ -125,8 +148,13 @@
         <v-layout align-center>
           <v-flex text-xs-center>
             <div class="display-2">{{ forecastResults.station.city }}</div>
-            <div>
+            <div
+              v-if="forecastResults.city && forecastResults.city.name !== forecastResults.station.city"
+            >
               {{ forecastResults.city.name }}
+            </div>
+            <div v-else>
+              <br>
             </div>
             <br/>
             <div v-if="forecastResults.current.temperature" class="display-4 font-weight-thin">
@@ -139,9 +167,36 @@
             </div>
             <br/>
             <div>
-              <v-chip v-if="forecastResults.current.humidex" label outline color="black" small disabled>Humidex: {{ forecastResults.current.humidex }}</v-chip>
-              <v-chip v-if="forecastResults.current.relativeHumidity" label outline color="black" small disabled>Humidity: {{ forecastResults.current.relativeHumidity }}%</v-chip>
-              <v-chip v-if="forecastResults.current.windDirection" label outline color="black" small disabled>Wind: {{ forecastResults.current.windDirection }} {{ forecastResults.current.windSpeed }}Km</v-chip>
+              <v-chip
+                v-if="forecastResults.current.humidex"
+                label
+                outline
+                color="black"
+                small
+                disabled
+              >
+                Humidex: {{ forecastResults.current.humidex }}
+              </v-chip>
+              <v-chip
+                v-if="forecastResults.current.relativeHumidity"
+                label
+                outline
+                color="black"
+                small
+                disabled
+              >
+                Humidity: {{ forecastResults.current.relativeHumidity }}%
+              </v-chip>
+              <v-chip
+                v-if="forecastResults.current.windDirection"
+                label
+                outline
+                color="black"
+                small
+                disabled
+              >
+                Wind: {{ forecastResults.current.windDirection }} {{ forecastResults.current.windSpeed }}Km
+              </v-chip>
             </div>
           </v-flex>
         </v-layout>
@@ -155,7 +210,13 @@
           <v-card flat class="grey lighten-5">
             <v-container fluid grid-list-md>
               <v-layout row wrap>
-                <v-flex xs12 md6 lg3 v-for="forecast in forecastResults.foreCast.slice(0, 4)" v-bind:key="forecast.id">
+                <v-flex
+                  xs12
+                  md6
+                  lg3
+                  v-for="forecast in forecastResults.foreCast.slice(0, 4)"
+                  v-bind:key="forecast.id"
+                >
                   <v-card tile raised height="290">
                     <v-card-title>
                       <div class="display-1">{{ forecast.forecastPeriod }}</div>
@@ -229,7 +290,9 @@ export default {
     },
 
     getForecastFromLocation (position) {
+      this.states = []
       this.showWelcome = false
+      this.$vuetify.goTo(0)
       const path = process.env.VUE_APP_BASE_URI + `/forecast/coordinates/`
       axios.get(path,
         {
@@ -258,7 +321,7 @@ export default {
     },
 
     getSearchResults (term) {
-      if (term.target.value) {
+      if (term.target.value.length > 1) {
         this.isSearching = true
         const path = process.env.VUE_APP_BASE_URI + `/forecast/search/` + term.target.value
         axios.get(path, {
@@ -278,6 +341,7 @@ export default {
 
     getForecastForCity (cityCode) {
       if (cityCode) {
+        this.$vuetify.goTo(0)
         const path = process.env.VUE_APP_BASE_URI + `/forecast/city/` + cityCode
         axios.get(path, {
           params: {'lang': this.language}

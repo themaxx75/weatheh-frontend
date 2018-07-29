@@ -3,6 +3,7 @@
     <!--absolute-->
     <v-toolbar
       app
+      color="white"
       clipped-left
       :prominent="true"
     >
@@ -22,8 +23,6 @@
         item-value="id"
         :no-filter="true"
         :loading="isSearching"
-        solo
-        flat
         hide-details
         hide-no-data
         :clearable="true"
@@ -393,11 +392,12 @@ export default {
         })
           .then(response => {
             this.states = response.data
+            this.isSearching = false
           })
           .catch(error => {
             console.log(error)
+            this.isSearching = false
           })
-        this.isSearching = false
       } else {
         this.states = []
       }

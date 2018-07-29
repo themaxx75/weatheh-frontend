@@ -153,7 +153,7 @@
     <!-- Now in city -->
     <v-jumbotron
       v-if="forecastResults !== null"
-      height="100%"
+      :height="null"
     >
       <v-container>
         <v-layout align-center>
@@ -220,7 +220,11 @@
     </v-jumbotron>
 
     <!-- Results for short term -->
-    <v-content v-if="forecastResults !== null" fluid>
+    <v-content
+      v-if="forecastResults !== null"
+      fluid
+      class="no-padding"
+    >
       <v-layout>
         <v-flex>
           <v-card flat class="grey lighten-5">
@@ -233,7 +237,7 @@
                   v-for="forecast in forecastResults.foreCast.slice(0, 4)"
                   v-bind:key="forecast.id"
                 >
-                  <v-card tile raised height="290">
+                  <v-card tile raised height="280">
                     <v-card-title>
                       <div class="display-1">{{ forecast.forecastPeriod }}</div>
                     </v-card-title>
@@ -254,14 +258,12 @@
         </v-flex>
       </v-layout>
     </v-content>
-    <p>&nbsp;</p>
-    <p>&nbsp;</p>
     <v-bottom-nav
       absolute
       :fixed="false"
       :value="true"
     >
-      <v-dialog width="70%">
+      <v-dialog width="500">
         <v-btn slot="activator">
           <span>{{ $t("message.footer.about") }}</span>
           <v-icon>info</v-icon>

@@ -231,7 +231,34 @@
               <br/>
             </v-flex>
           </v-layout>
+
+          <!-- Hourly -->
+          <v-card flat class="grey lighten-5">
+            <v-card-text class="overflow-hidden py-0">
+              <v-layout row align-content-center class="horiz-scroll">
+                <v-flex
+                  v-for="hourly in forecastResults['weather']['hourly']"
+                  :key="hourly['datetimeUtc']"
+                  px-1
+                  pb-2
+                >
+                  <div class="pos-relative">
+                    <v-card-text height="133" width="133px" class="text-xs-center">
+                      <i :class="hourly['iconClass']" class="display-2"></i>
+                      <span class="subheading">
+                        {{ hourly['temperature'] }}&deg;C
+                      </span>
+                      <span class="caption">
+                        {{ fromUtcToLocal(hourly['datetimeUtc']) }}
+                      </span>
+                    </v-card-text>
+                  </div>
+                </v-flex>
+              </v-layout>
+            </v-card-text>
+          </v-card>
           <br/>
+          <!-- Short and long term -->
           <template v-if="forecastResults !== null">
             <v-container fluid class="no-padding text-xs-center">
 

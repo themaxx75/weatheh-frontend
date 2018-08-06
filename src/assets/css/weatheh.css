@@ -9,3 +9,12 @@
 .no-padding {
   padding: 0px 0px 80px !important;
 }
+
+
+.overflow-hidden {
+  overflow: hidden;
+}
+.horiz-scroll {
+  overflow-y: hidden;
+  overflow-x: auto;
+}

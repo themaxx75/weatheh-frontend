@@ -40,7 +40,8 @@ const messages = {
         humidex: 'Humidex',
         humidity: 'Humidity',
         wind: 'Wind',
-        observed: 'Observed'
+        observed: 'Observed',
+        at: 'at'
       },
       footer: {
         about: 'About',
@@ -65,7 +66,8 @@ const messages = {
         humidex: 'Humidex',
         humidity: 'Humidité',
         wind: 'Vent',
-        observed: 'Observé'
+        observed: 'Observé',
+        at: 'a'
       },
       footer: {
         about: 'À propos',

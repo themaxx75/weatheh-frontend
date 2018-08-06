@@ -1,15 +1,14 @@
 <template>
   <v-app id="weatheh">
-    <!--absolute-->
     <v-toolbar
       app
       color="white"
       clipped-left
-      :prominent="true"
+      :prominent="false"
     >
       <a href="/">
         <!--suppress CheckImageSize -->
-        <img src="./../assets/logo_named.svg" alt="Weatheh.com logo" height="35">
+        <img src="./../assets/logo_named.svg" alt="Weatheh.com logo" height="35" width="35">
       </a>
       &nbsp;&nbsp;&nbsp;&nbsp;
       <v-autocomplete
@@ -42,19 +41,19 @@
             color="grey darken-3"
             class="headline font-weight-light white--text"
           >
-            {{ item.province.code }}
+            {{ item['province'] }}
           </v-list-tile-avatar>
           <v-list-tile-content>
-            <v-list-tile-title v-text="item.name"></v-list-tile-title>
-            <v-list-tile-sub-title v-text="item.region"></v-list-tile-sub-title>
+            <v-list-tile-title v-text="item['name']"></v-list-tile-title>
+            <v-list-tile-sub-title v-text="item['parentName']"></v-list-tile-sub-title>
           </v-list-tile-content>
           <v-list-tile-avatar>
             <v-chip
               color="grey darken-3"
               text-color="white"
-              v-if="item.condition.temperature"
+              v-if="item['weather']['current']['temperature']"
             >
-              <i :class="item.condition.iconClass" ></i>{{ item.condition.temperature }}&deg;C
+              <i :class="item['weather']['current']['iconClass']" ></i>{{ item['weather']['current']['temperature'] }}&deg;C
             </v-chip>
           </v-list-tile-avatar>
           &nbsp;
@@ -81,48 +80,48 @@
     </v-toolbar>
     <v-content fluid>
       <!-- Only visible when forecastResults is null -->
-      <v-container v-if="forecastResults === null" fluid fill-height class="grey lighten-4">
-        <v-jumbotron>
-          <v-container fill-height>
-            <v-layout align-center>
-              <v-flex align-center>
-                <h4 class="display-1" >
-                  <!--suppress CheckImageSize -->
-                  <img src="./../assets/logo.svg" height="50"/>
-                  Weatheh<br/>
-                  {{ $t("message.placeHolder.title") }}
-                </h4>
-                <span class="subheading">
-                  {{ $t("message.placeHolder.body") }}
-                </span>
-                <!--<v-divider class="my-3"></v-divider>-->
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-jumbotron>
-      </v-container>
+      <template v-if="forecastResults === null">
+        <v-container fluid fill-height class="grey lighten-4">
+          <v-jumbotron>
+            <v-container fill-height>
+              <v-layout align-center>
+                <v-flex align-center>
+                  <h4 class="display-1" >
+                    <!--suppress CheckImageSize -->
+                    <img src="./../assets/logo.svg" height="50"/>
+                    Weatheh<br/>
+                    {{ $t("message.placeHolder.title") }}
+                  </h4>
+                  <span class="subheading">
+                    {{ $t("message.placeHolder.body") }}
+                  </span>
+                  <!--<v-divider class="my-3"></v-divider>-->
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-jumbotron>
+        </v-container>
+      </template>
 
       <!-- Loader -->
-      <v-layout row>
-        <v-dialog
-          v-model="isLoadingFullScreen"
-          persistent
-          fullscreen
-          content-class="loading-dialog"
-          transition="slide-y-transition"
-        >
-          <v-container fill-height>
-            <v-layout row justify-center align-center>
-              <v-progress-circular
-                indeterminate
-                :size="70"
-                :width="7"
-                color="black"
-              ></v-progress-circular>
-            </v-layout>
-          </v-container>
-        </v-dialog>
-      </v-layout>
+      <v-dialog
+        v-model="isLoadingFullScreen"
+        persistent
+        fullscreen
+        content-class="loading-dialog"
+        transition="slide-y-transition"
+      >
+        <v-container fill-height>
+          <v-layout row justify-center align-center>
+            <v-progress-circular
+              indeterminate
+              :size="70"
+              :width="7"
+              color="black"
+            ></v-progress-circular>
+          </v-layout>
+        </v-container>
+      </v-dialog>
 
       <!-- Dialog when not able to get geo location -->
       <v-layout row justify-center>
@@ -151,113 +150,140 @@
     </v-content>
 
     <!-- Now in city -->
-    <v-jumbotron
-      v-if="forecastResults !== null"
-      :height="null"
-    >
-      <v-container>
-        <v-layout align-center>
-          <v-flex text-xs-center>
-            <div class="display-2">{{ forecastResults.station.city }}</div>
-            <div class="display-1">{{ forecastResults.city.province.name }}</div>
-            <div
-              v-if="forecastResults.city && forecastResults.city.name !== forecastResults.station.city"
-            >
-              {{ forecastResults.city.name }}
+    <template v-if="forecastResults !== null">
+      <div v-for="warning in forecastResults['weather']['warnings']" v-bind:key="warning['description']">
+        <template v-if="warning['priority'] === 'urgent'">
+          <v-alert
+            :value="warning"
+            color="error"
+          >
+            <div class="text-xs-center">
+              <v-btn small :href="warning['url']" color="black" target="_blank" dark>
+                <v-icon>warning</v-icon>&nbsp;
+                {{ warning['description']}}
+              </v-btn>
             </div>
-            <div v-else>
-              <br>
+          </v-alert>
+        </template>
+        <template v-else>
+          <v-alert
+            :value="warning"
+            color="warning"
+          >
+            <div class="text-xs-center">
+              <v-btn small :href="warning['url']" color="black" target="_blank" dark>
+                <v-icon>warning</v-icon>&nbsp;
+                {{ warning['description']}}
+              </v-btn>
             </div>
-            <br/>
-            <div v-if="forecastResults.current.temperature" class="display-4 font-weight-thin">
-              <i :class="forecastResults.current.iconClass"></i>
-              {{ forecastResults.current.temperature }}&deg;C
-            </div>
-            <br/>
-            <div v-if="forecastResults.current.description" class="display-1">
-              {{ forecastResults.current.description }}
-            </div>
-            <br/>
-            <div>
-              <v-chip
-                v-if="forecastResults.current.humidex"
-                label
-                outline
-                color="black"
-                small
-                disabled
-              >
-                {{ $t("message.terms.humidex") }}: {{ forecastResults.current.humidex }}
-              </v-chip>
-              <v-chip
-                v-if="forecastResults.current.relativeHumidity"
-                label
-                outline
-                color="black"
-                small
-                disabled
-              >
-                {{ $t("message.terms.humidity") }}: {{ forecastResults.current.relativeHumidity }}%
-              </v-chip>
-              <v-chip
-                v-if="forecastResults.current.windDirection"
-                label
-                outline
-                color="black"
-                small
-                disabled
-              >
-                {{ $t("message.terms.wind") }}: {{ forecastResults.current.windDirection }} {{ forecastResults.current.windSpeed }}Km
-              </v-chip>
-            </div>
-            <div v-if="forecastResults.observationDatetimeUtc">
-              {{ $t("message.terms.observed") }}: {{ fromUtcToLocal(forecastResults.observationDatetimeUtc) }}
-            </div>
-
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </v-jumbotron>
-
-    <!-- Results for short term -->
-    <v-content
-      v-if="forecastResults !== null"
-      fluid
-      class="no-padding"
-    >
-      <v-layout>
-        <v-flex>
-          <v-card flat class="grey lighten-5">
-            <v-container fluid grid-list-md>
-              <v-layout row wrap>
-                <v-flex
-                  xs12
-                  md6
-                  lg3
-                  v-for="forecast in forecastResults.foreCast.slice(0, 4)"
-                  v-bind:key="forecast.id"
+          </v-alert>
+        </template>
+      </div>
+      <v-jumbotron :height="null">
+        <v-container>
+          <v-layout align-center>
+            <v-flex text-xs-center>
+              <div class="display-2 font-weight-medium">{{ forecastResults['name'] }}</div>
+              <div class="headline font-weight-thin">{{ forecastResults['provinceFull'] }}</div>
+              <div v-if="forecastResults['weather']['current']['temperature']" class="display-4">
+                <i :class="forecastResults['weather']['current']['iconClass']"></i>
+                <span class="font-weight-thin">{{ forecastResults['weather']['current']['temperature'] }}&deg;C</span>
+              </div>
+              <div v-if="forecastResults['weather']['current']['description']" class="display-2 font-weight-light">
+                {{ forecastResults['weather']['current']['description'] }}
+              </div>
+              <br/>
+              <div>
+                <v-chip
+                  v-if="forecastResults['weather']['current']['humidex']"
+                  label
+                  outline
+                  color="black"
+                  small
+                  disabled
                 >
-                  <v-card tile raised height="280">
-                    <v-card-title>
-                      <div class="display-1">{{ forecast.forecastPeriod }}</div>
-                    </v-card-title>
-                    <v-card-title>
-                      <div class="display-3 font-weight-thin">
-                        <i :class="forecast.iconClass" ></i>
-                        {{ forecast.temperature }}&deg;C
-                      </div>
-                    </v-card-title>
-                    <v-card-title>
-                      <div >{{ forecast.cloudPrecipitation }}</div>
-                    </v-card-title>
-                  </v-card>
+                  {{ $t("message.terms.humidex") }}: {{ forecastResults['weather']['current']['humidex'] }}
+                </v-chip>
+                <v-chip
+                  v-if="forecastResults['weather']['current']['relativeHumidity']"
+                  label
+                  outline
+                  color="black"
+                  small
+                  disabled
+                >
+                  {{ $t("message.terms.humidity") }}: {{ forecastResults['weather']['current']['relativeHumidity'] }}%
+                </v-chip>
+                <v-chip
+                  v-if="forecastResults['weather']['current']['windDirection']"
+                  label
+                  outline
+                  color="black"
+                  small
+                  disabled
+                >
+                  {{ $t("message.terms.wind") }}: {{ forecastResults['weather']['current']['windDirection'] }} {{ forecastResults['weather']['current']['windSpeed'] }}Km
+                </v-chip>
+              </div>
+              <div v-if="forecastResults['weather']['observationDatetimeUtc']" class="caption">
+                {{ $t("message.terms.observed") }}: {{ fromUtcToLocal(forecastResults['weather']['observationDatetimeUtc']) }} ({{ forecastResults['station'] }}, {{ forecastResults['parentName'] }})
+              </div>
+              <br/>
+            </v-flex>
+          </v-layout>
+          <br/>
+          <template v-if="forecastResults !== null">
+            <v-container fluid class="no-padding text-xs-center">
+
+              <v-layout row wrap align-center>
+                <v-flex>
+                  <v-container fluid grid-list-md>
+                    <div
+                      v-for="forecast in forecastResults['weather']['shortTerm']"
+                      v-bind:key="forecast.id"
+                    >
+                      <v-card tile raised dark>
+                        <v-card-text>
+                          <div class="display-1 font-weight-medium">{{ forecast['forecastPeriod'] }}</div>
+                          <div class="display-3 font-weight-thin">
+                            <i :class="forecast['iconClass']" ></i>
+                            {{ forecast['temperature'] }}&deg;C
+                          </div>
+                          <div class="title font-weight-regular">
+                            {{ forecast['summary'] }}
+                          </div>
+                        </v-card-text>
+                      </v-card>
+                      <br/>
+                    </div>
+                    <div
+                      v-for="forecast in forecastResults['weather']['longTerm']"
+                      v-bind:key="forecast.id"
+                    >
+                      <v-card tile raised dark>
+                        <v-card-text>
+                          <div class="display-1 font-weight-medium">{{ forecast['forecastPeriod'] }}</div>
+                          <div class="display-3 font-weight-thin">
+                            <i :class="forecast['iconClass']" ></i>
+                            {{ forecast['temperature'] }}&deg;C
+                          </div>
+                          <div class="title font-weight-regular">
+                            {{ forecast['cloudPrecipitation'] }}
+                          </div>
+                        </v-card-text>
+                      </v-card>
+                      <br/>
+                    </div>
+
+                  </v-container>
                 </v-flex>
               </v-layout>
             </v-container>
-          </v-card>
-        </v-flex>
-      </v-layout>
-    </v-content>
+          </template>
+        </v-container>
+      </v-jumbotron>
+    </template>
+    <br/>
     <v-bottom-nav
       absolute
       :fixed="false"
@@ -308,7 +334,7 @@ export default {
   name: 'Home',
   data () {
     return {
-      city: null,
+      cityCode: null,
       userPosition: null,
       forecastResults: null,
       isLoadingFullScreen: false,
@@ -343,8 +369,8 @@ export default {
         this.$i18n.locale = 'en'
         this.$cookie.set('lang', 'en', 30)
       }
-      if (this.city) {
-        this.getForecastForCity(this.city)
+      if (this.cityCode) {
+        this.getForecastForCity(this.cityCode)
       }
     },
 
@@ -356,24 +382,28 @@ export default {
     getForecastFromLocation (position) {
       this.states = []
       this.showWelcome = false
+      // noinspection JSIgnoredPromiseFromCall
       this.$vuetify.goTo(0)
-      const path = process.env.VUE_APP_BASE_URI + `/forecast/coordinates/`
+      // noinspection JSUnresolvedVariable
+      const path = process.env['VUE_APP_BASE_URI'] + `/forecast/coordinates/`
       axios.get(path,
         {
           params: {
-            'lat': position.coords.latitude.toFixed(4),
-            'lon': position.coords.longitude.toFixed(4),
+            'lat': position.coords.latitude,
+            'lon': position.coords.longitude,
             'lang': this.$i18n.locale
           }
         }
       )
         .then(response => {
           this.forecastResults = response.data
-          this.city = this.forecastResults.city.id
-          this.$cookie.set('city', this.city, 30)
+          this.cityCode = this.forecastResults['id']
+          this.$cookie.set('city', this.forecastResults['id'], 30)
         })
         .catch(error => {
           console.log(error)
+          this.cityCode = null
+          this.$cookie.delete('city')
         })
       this.isLoadingFullScreen = false
     },
@@ -388,7 +418,8 @@ export default {
     getSearchResults (term) {
       if (term.target.value.length > 1) {
         this.isSearching = true
-        const path = process.env.VUE_APP_BASE_URI + `/forecast/search/` + term.target.value
+        // noinspection JSUnresolvedVariable
+        const path = process.env['VUE_APP_BASE_URI'] + `/forecast/search/` + term.target.value
         axios.get(path, {
           params: {'lang': this.$i18n.locale}
         })
@@ -406,20 +437,27 @@ export default {
     },
 
     getForecastForCity (cityCode) {
+      console.log((cityCode))
       if (cityCode) {
+        // noinspection JSIgnoredPromiseFromCall
         this.$vuetify.goTo(0)
         this.isLoadingFullScreen = true
-        const path = process.env.VUE_APP_BASE_URI + `/forecast/city/` + cityCode
+        // noinspection JSUnresolvedVariable
+        const path = process.env['VUE_APP_BASE_URI'] + `/forecast/city/` + cityCode
+        // this.cityCode = null
+        // this.$cookie.delete('city')
         axios.get(path, {
           params: {'lang': this.$i18n.locale}
         })
           .then(response => {
             this.forecastResults = response.data
-            this.city = this.forecastResults.city.id
-            this.$cookie.set('city', this.city, 30)
+            this.cityCode = this.forecastResults['id']
+            this.$cookie.set('city', this.forecastResults['id'], 30)
           })
           .catch(error => {
             console.log(error)
+            this.cityCode = null
+            this.$cookie.delete('city')
           })
         this.isLoadingFullScreen = false
       }
@@ -428,12 +466,15 @@ export default {
     getPreviousCity () {
       const city = this.$cookie.get('city')
       if (city || this.forecastResults == null) {
+        // this.isLoadingFullScreen = true
         this.getForecastForCity(city)
+        // this.isLoadingFullScreen = false
       }
     }
   },
 
   beforeMount () {
+    this.forecastResults = null
     this.getLanguage()
     this.getPreviousCity()
   }

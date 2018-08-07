@@ -4,22 +4,14 @@ import './plugins/vuetify'
 import App from './App.vue'
 import router from './router'
 
-// import { library } from '@fortawesome/fontawesome-svg-core'
-// import { faSpinner } from '@fortawesome/fontawesome-free-solid'
-// import { faGithub } from '@fortawesome/free-brands-svg-icons'
-// import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-
 import './assets/css/fontello.css'
 import './assets/css/weatheh.css'
 
 import VueCookie from 'vue-cookie'
 import VueI18n from 'vue-i18n'
 
-// library.add(faSpinner)
-
 Vue.use(VueCookie)
 Vue.use(VueI18n)
-// Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.config.productionTip = false
 
 const messages = {

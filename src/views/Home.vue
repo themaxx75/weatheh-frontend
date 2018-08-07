@@ -235,7 +235,7 @@
           <!-- Hourly -->
           <v-card flat class="grey lighten-5">
             <v-card-text class="overflow-hidden py-0">
-              <v-layout row align-content-center class="horiz-scroll">
+              <v-layout row align-content-center class="horiz-scroll" style="-webkit-overflow-scrolling: touch;">
                 <v-flex
                   v-for="hourly in forecastResults['weather']['hourly']"
                   :key="hourly['datetimeUtc']"

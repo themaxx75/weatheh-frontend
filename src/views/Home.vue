@@ -25,6 +25,9 @@
         hide-details
         hide-no-data
         :clearable="true"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
       >
         <template slot="no-data">
           <v-list-tile>
